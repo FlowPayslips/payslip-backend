@@ -28,3 +28,7 @@ urlpatterns = [
 urlpatterns += [
     path("api/", include("core.urls")),
 ]
+
+urlpatterns += [
+    path("api/", include("payroll.urls")),
+]
