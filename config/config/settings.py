@@ -142,7 +142,18 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=4), #keep minutes=15
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# Configure Spectacular settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FLOW PAYSLIP API',
+    'DESCRIPTION': 'API for managing payslips and payroll',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    "SWAGGER_UI_SETTINGS": {
+        "theme": "dark",
+    },
 }
