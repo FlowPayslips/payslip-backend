@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+import uuid
+from django.utils import timezone
 
 
 class Company(models.Model):
@@ -23,3 +25,33 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.company.name}"
+
+class Invite(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField()
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, related_name="invites"
+    )
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="sent_invites",
+    )
+
+    token = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    accepted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("email", "company")
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+
+    def is_accepted(self):
+        return self.accepted_at is not None
+
+    def __str__(self):
+        return f"{self.email} -> {self.company.name}"
