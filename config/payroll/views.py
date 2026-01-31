@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Payrun, Payslip
 from .serializers import PayrunSerializer, PayslipSerializer, PayrunCreateSerializer
 from core.permissions import IsCompanyMember
-from accounts.permissions import IsAdminUser
+from core.permissions import IsAdmin
 from .permissions import IsPayslipOwner
 from rest_framework.decorators import action
 from django.utils import timezone
@@ -14,7 +14,7 @@ from drf_spectacular.utils import extend_schema
 from core.models import Employee
 
 class PayrunViewSet(ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated, IsCompanyMember, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsCompanyMember, IsAdmin]
 
     def get_queryset(self):
         return Payrun.objects.filter(
@@ -92,7 +92,7 @@ class PayrunViewSet(ReadOnlyModelViewSet):
 
 class PayslipViewSet(ReadOnlyModelViewSet):
     serializer_class = PayslipSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCompanyMember]
 
     def get_queryset(self):
         user = self.request.user

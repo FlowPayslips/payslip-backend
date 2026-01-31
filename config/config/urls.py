@@ -32,3 +32,7 @@ urlpatterns += [
 urlpatterns += [
     path("api/", include("payroll.urls")),
 ]
+
+urlpatterns += [
+    path("api/", include("accounts.urls")),
+]

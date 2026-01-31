@@ -13,6 +13,24 @@ class Company(models.Model):
         return self.name
 
 class Employee(models.Model):
+    ROLE_EMPLOYEE = "employee"
+    ROLE_ADMIN = "admin"
+    ROLE_ACCOUNTANT = "accountant"
+
+    ROLE_CHOICES = (
+        (ROLE_EMPLOYEE, "Employee"),
+        (ROLE_ADMIN, "Admin"),
+        (ROLE_ACCOUNTANT, "Accountant"),
+    )
+
+    ONBOARDING_INVITED = "invited"
+    ONBOARDING_ONBOARDED = "onboarded"
+
+    ONBOARDING_STATUS_CHOICES = (
+        (ONBOARDING_INVITED, "Invited"),
+        (ONBOARDING_ONBOARDED, "Onboarded"),
+    )
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
@@ -20,6 +38,18 @@ class Employee(models.Model):
         Company, on_delete=models.CASCADE, related_name="employees"
     )
     employee_id = models.CharField(max_length=50)
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default=ROLE_EMPLOYEE,
+    )
+
+    onboarding_status = models.CharField(
+        max_length=20,
+        choices=ONBOARDING_STATUS_CHOICES,
+        default=ONBOARDING_INVITED,
+    )
+
     is_active = models.BooleanField(default=True)
     joined_at = models.DateField(null=True, blank=True)
 

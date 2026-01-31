@@ -6,7 +6,7 @@ from .permissions import IsCompanyMember
 from .serializers import EmployeeSerializer, EmployeeInviteSerializer, AcceptInviteSerializer
 
 from rest_framework.viewsets import ModelViewSet
-from accounts.permissions import IsAdminUser
+from .permissions import IsAdmin
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,7 +24,7 @@ class CompanyViewSet(ReadOnlyModelViewSet):
 
 
 class EmployeeViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsCompanyMember, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsCompanyMember, IsAdmin]
 
     def get_queryset(self):
         return Employee.objects.filter(

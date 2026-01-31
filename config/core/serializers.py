@@ -19,7 +19,6 @@ class CompanySerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     company = CompanySerializer(read_only=True)
-    onboarding_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
@@ -31,18 +30,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "is_active",
             "joined_at",
             "onboarding_status",
+            "role",
         )
 
-    def get_onboarding_status(self, obj):
-        invite = Invite.objects.filter(
-            email=obj.user.email,
-            company=obj.company,
-        ).order_by("-created_at").first()
-
-        if invite and invite.accepted_at:
-            return "ONBOARDED"
-
-        return "INVITED"
 
 
 class EmployeeInviteSerializer(serializers.ModelSerializer):
@@ -133,5 +123,15 @@ class AcceptInviteSerializer(serializers.Serializer):
 
         invite.accepted_at = timezone.now()
         invite.save(update_fields=["accepted_at"])
+
+        employee = Employee.objects.get(
+            user=user,
+            company=invite.company,
+        )
+
+        employee.onboarding_status = Employee.ONBOARDING_ONBOARDED
+        employee.joined_at = timezone.now().date()
+        employee.save(update_fields=["onboarding_status", "joined_at"])
+
 
         return user
