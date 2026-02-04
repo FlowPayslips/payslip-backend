@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Payrun, Payslip
+from rest_framework import serializers
+from .models import Payslip, PayslipLineItem
 
 
 class PayrunSerializer(serializers.ModelSerializer):
@@ -39,3 +41,40 @@ class PayrunCreateSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         validated_data["company"] = request.user.employee.company
         return super().create(validated_data)
+
+
+class PayslipLineItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PayslipLineItem
+        fields = (
+            "component_name",
+            "component_code",
+            "component_type",
+            "amount",
+        )
+
+class PayslipDetailSerializer(serializers.ModelSerializer):
+    payrun_month = serializers.IntegerField(source="payrun.month")
+    payrun_year = serializers.IntegerField(source="payrun.year")
+    company_name = serializers.CharField(
+        source="payrun.company.name"
+    )
+    employee_id = serializers.CharField(
+        source="employee.employee_id"
+    )
+    line_items = PayslipLineItemSerializer(many=True)
+
+    class Meta:
+        model = Payslip
+        fields = (
+            "id",
+            "company_name",
+            "employee_id",
+            "payrun_month",
+            "payrun_year",
+            "basic_pay",
+            "deductions",
+            "net_pay",
+            "generated_at",
+            "line_items",
+        )
